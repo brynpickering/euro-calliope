@@ -8,7 +8,8 @@ NATIONAL_PHS_STORAGE_CAPACITIES = "data/pumped-hydro/storage-capacities-gwh.csv"
 
 include: "./rules/shapes.smk"
 include: "./rules/hydro.smk"
-localrules: all, raw_load, model, clean, parameterise_template, potentials_zipped
+include: "./rules/sync.smk"
+localrules: all, raw_load, model, clean, parameterise_template, potentials_zipped, scale_test
 configfile: "config/default.yaml"
 wildcard_constraints:
         resolution = "((continental)|(national)|(regional))"
@@ -259,3 +260,21 @@ rule test:
     output: "build/logs/test-report.html"
     shell:
         "py.test --html={output} {params.run_regional} --self-contained-html"
+
+
+rule run_continental_model:
+    input:
+        flag = "build/logs/continental-model.done",
+        model = "tests/scaling.yaml"
+    output: "build/output/continental-model.nc"
+    conda: "envs/test.yaml"
+    shell: "calliope run {input.model} --save_netcdf {output}"
+
+
+rule scale_test:
+    message: "Run scaling tests."
+    input:
+        "build/output/continental-model.nc",
+        "build/output/continental-model-scaled.nc"
+    conda: "envs/test.yaml"
+    shell: "py.test --test-scaling tests/test_scaling.py"

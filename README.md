@@ -67,3 +67,13 @@ The default units for Euro-Calliope are `MW`, `MWh`, `EUR`, and `km2`, but you c
 To run all tests, including the tests on the regional level:
 
     snakemake --use-conda test -f --config runregional=True
+
+
+## Run the scaling test
+
+    snakemake --use-conda --configfile config/scale-test.yaml build/output/continental-model.nc
+    mv build/output/continental-model.nc build/output/continental-model-scaled.nc
+    rm -r build/model
+    rm build/logs/continental-model.done
+    snakemake --use-conda build/output/continental-model.nc
+    snakemake --use-conda scale_test
