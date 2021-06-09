@@ -152,6 +152,9 @@ properties:
             biofuel-efficiency:
                 type: number
                 maximum: 1
+            nuclear-capacity-year:
+                type: string
+                enum: ["2050", "current"]
     scope:
         type: object
         properties:

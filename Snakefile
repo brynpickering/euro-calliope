@@ -173,8 +173,10 @@ rule nuclear_regional_capacity:
         power_plant_database = rules.jrc_power_plant_database.output[0],
         nuclear_capacity = "data/nuclear_capacity_2050.csv",
         shapes = landeligibility("build/{resolution}/units.geojson")
+    params:
+        nuclear_capacity_year = config["parameters"]["nuclear-capacity-year"]
     conda: "envs/geo.yaml"
-    output: "build/data/{resolution}/nuclear_capacity_2050.csv"
+    output: "build/data/{resolution}/nuclear_capacity.csv"
     script: "scripts/nuclear_capacity.py"
 
 
