@@ -45,8 +45,8 @@ techs:
             resource_unit: energy_per_cap
         costs:
             monetary:
-                energy_cap: {{ mean([0.29e6, 0.24e6]) * scaling_factors.specific_costs }} # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW") }} | Danish energy agency (technology data for el/dh, average of 22 photovoltaics large and tracker, 2050)
-                om_annual: {{ mean([5000, 5400]) * scaling_factors.specific_costs }} # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW") }} | Danish energy agency (technology data for el/dh, average of 22 photovoltaics medium and large, 2050)
+                energy_cap: {{ 0.24e6 * scaling_factors.specific_costs }} # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW") }} | Danish energy agency (technology data for el/dh, 22 photovoltaics large, 2050)
+                om_annual: {{ 5000 * scaling_factors.specific_costs }} # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW") }} | Danish energy agency (technology data for el/dh, 22 photovoltaics large, 2050)
     roof_mounted_pv:
         essentials:
             name: Roof mounted PV
@@ -118,9 +118,9 @@ techs:
                 energy_cap: {{ 3370000 * scaling_factors.specific_costs }}  # {{ (1 / scaling_factors.specific_costs) | unit("EUR2013/MW") }} from [@JRC:2014] Table 12
                 om_prod: {{ 5 * scaling_factors.specific_costs }} # {{ (1 / scaling_factors.specific_costs) | unit("EUR2013/MW/yr") }} from [@JRC:2014] Table 12
                 om_annual: {{ 3370000 * 0.03 * scaling_factors.specific_costs }}  # {{ (1 / scaling_factors.specific_costs) | unit("EUR2013/MW/yr") }} from [@JRC:2014] Table 12
-    biofuel_supply: # based on Anaerobic digestion from [@JRC:2014] Table 48
+    biogas_to_electricity_supply: # based on Anaerobic digestion from [@JRC:2014] Table 48
         essentials:
-            name: Biofuel
+            name: Electricity from anaerobically digested biofuel
             parent: supply_plus
             carrier: electricity
         constraints:
@@ -132,3 +132,11 @@ techs:
                 om_prod: 0 # 3.1 (EUR2013/MWh) added to om_con, because value is very small and causing poor numerical range
                 om_annual: {{ 2300000 * 0.041 * scaling_factors.specific_costs }}  # {{ (1 / scaling_factors.specific_costs) | unit("EUR2013/MW/yr") }} 2300000 * 4.1%
                 om_con: {{ (biofuel_fuel_cost / biofuel_efficiency + 3.1) * scaling_factors.specific_costs }} # {{ (1 / scaling_factors.specific_costs) | unit("EUR/MWh") }}
+    biofuel_supply:
+        essentials:
+            name: Biofuel
+            parent: supply
+            carrier: biofuel
+        # constraints are applied on a per-location basis
+        costs.monetary:
+            om_con: {{ biofuel_fuel_cost * scaling_factors.specific_costs }} # {{ (1 / scaling_factors.specific_costs) | unit("EUR/MWh") }}

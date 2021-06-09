@@ -181,20 +181,20 @@ techs:
                 om_annual_investment_fraction: 0.05  # 5% of annual CAPEX
 
     # TODO: add ramping?
-    electrolysis:  # [Calliope-Italy 2030, relatively high energy_cap compared to Danish energy agency (~0.7 MEur/MW H2)]
+    electrolysis:  # [Danish energy agency, renewable fuels, 86-88 Electrolysers, 2050]
         essentials:
             name: Hydrogen by electrolysis
             parent: conversion
             carrier_in: electricity
             carrier_out: hydrogen
         constraints:
-            energy_eff: 0.66
-            lifetime: 18
+            energy_eff: {{ mean([0.79, 0.67, 0.692])}}  # average of SOEC, PEM, and Alkaline
+            lifetime: {{ mean([30, 15, 25])}}  # average of SOEC, PEM, and Alkaline
         costs:
             monetary:
                 interest_rate: 0.1
-                energy_cap: {{ 1.2e6 * scaling_factors.specific_costs }}  # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW_H2") }}
-                om_annual: {{ 36e3 * scaling_factors.specific_costs }}  # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW_H2/year") }}
+                energy_cap: {{ mean([0.4 / 0.79, 0.4 / 0.67, 0.5 / 0.692]) * 1e6 * scaling_factors.specific_costs }}  # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW_H2") }} | average of SOEC, PEM, and Alkaline
+                om_annual: {{ mean([12 / 0.79, 20 / 0.67, 25 / 0.692]) * 1e3 * scaling_factors.specific_costs }}  # {{ (1 / scaling_factors.specific_costs) | unit("EUR2015/MW_H2/year") }} | average of SOEC, PEM, and Alkaline
 
     dac:  # [Fasihi_2019, Low T, 2050]
         essentials:
@@ -209,4 +209,4 @@ techs:
             monetary:
                 interest_rate: 0.07
                 energy_cap: {{ 1.592e6 * scaling_factors.monetary / scaling_factors.co2 }}  # {{ (1 / (scaling_factors.monetary / scaling_factors.co2)) | unit("EUR2015/tCO2") }}, 199 Eur/tCO2/y -> 199 Eur/0.125kgCO2/h (8000 operational hours) -> 1592Eur/kgCO2 -> 1.592x10^6 Eur/tCO2
-                om_annual_investment_fraction: 0.037  # 3.7% of annual CAPEX
+                om_annual_investment_fraction: 0.04  # 3.7% of annual CAPEX

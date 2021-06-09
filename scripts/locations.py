@@ -13,9 +13,12 @@ TEMPLATE = """locations:
         techs:
             demand_elec:
             battery:
-            hydrogen_storage:
+            hydrogen_electricity_storage:
             open_field_pv:
-            biofuel_supply:
+            biogas_to_electricity_supply:
+                constraints:
+                    resource: {{ location.biofuel_potential_mwh_per_year * biofuel_efficiency / 8760 * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
+                    storage_cap_equals: {{ location.biofuel_potential_mwh_per_year * biofuel_efficiency / 2 * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MWh") }} (0.5x annual yield) # ASSUME < 1 for numerical range
             wind_onshore_competing:
             wind_onshore_monopoly:
                 constraints:
@@ -95,7 +98,7 @@ def construct_locations(path_to_shapes, path_to_land_eligibility_km2, path_to_hy
         maximum_installable_power_density=maximum_installable_power_density
     )
     hydro_capacities = pd.read_csv(path_to_hydro_capacities_mw, index_col=0)
-    biofuel = pd.read_csv(path_to_biofuel_potential_mwh, index_col=0) * biofuel_efficiency
+    biofuel = pd.read_csv(path_to_biofuel_potential_mwh, index_col=0)
     nuclear_capacity = pd.read_csv(path_to_nuclear_capacity_mw, index_col=0)
     locations = locations.merge(
         pd.concat(
@@ -113,7 +116,8 @@ def construct_locations(path_to_shapes, path_to_land_eligibility_km2, path_to_hy
     env.filters["unit"] = filters.unit
     rendered = env.from_string(TEMPLATE).render(
         locations=locations,
-        scaling_factors=scaling_factors
+        scaling_factors=scaling_factors,
+        biofuel_efficiency=biofuel_efficiency
     )
     with open(path_to_output_yaml, "w") as result_file:
         result_file.write(rendered)
