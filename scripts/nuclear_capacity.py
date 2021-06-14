@@ -24,7 +24,7 @@ def regionalise_nuclear_capacity(
         .capacity_g
     )
     if nuclear_capacity_year == "current":
-        capacity_current_per_region = pd.concat(
+        capacity_per_region = pd.concat(
             [capacity_current_per_region, capacity_current_per_region],
             keys=['installed_capacity_nuclear_min_MW', 'installed_capacity_nuclear_max_MW'],
             axis=1

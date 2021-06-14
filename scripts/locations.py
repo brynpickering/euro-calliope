@@ -46,6 +46,7 @@ TEMPLATE = """locations:
                     energy_cap_min: {{ location.installed_capacity_nuclear_min_MW * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
                     energy_cap_max: {{ location.installed_capacity_nuclear_max_MW * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
             {% endif %}
+            biofuel_supply:
             ccgt:
 
     {% endfor %}
@@ -74,6 +75,15 @@ overrides:
                 techs: [biofuel_supply]
                 carrier_prod_max:
                     biofuel: {{ location.biofuel_potential_mwh_per_year * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
+            {% endfor %}
+    fossil-fuel-supply:
+        locations:
+            {% for id, location in locations.iterrows() %}
+            {{ id }}.techs:
+                diesel_supply:
+                kerosene_supply:
+                methanol_supply:
+                methane_supply:
             {% endfor %}
 
 """
