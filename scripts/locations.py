@@ -46,7 +46,6 @@ TEMPLATE = """locations:
                     energy_cap_min: {{ location.installed_capacity_nuclear_min_MW * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
                     energy_cap_max: {{ location.installed_capacity_nuclear_max_MW * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
             {% endif %}
-            biofuel_supply:
             ccgt:
 
     {% endfor %}
@@ -66,24 +65,6 @@ overrides:
                     constraints:
                         energy_cap_equals: {{ location.installed_capacity_hphs_MW * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
                         storage_cap_equals: {{ location.storage_capacity_hphs_MWh * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MWh") }}
-            {% endfor %}
-    biofuel_maximum:
-        group_constraints:
-            {% for id, location in locations.iterrows() %}
-            biofuel_{{ id }}:
-                locs: [{{ id }}]
-                techs: [biofuel_supply]
-                carrier_prod_max:
-                    biofuel: {{ location.biofuel_potential_mwh_per_year * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
-            {% endfor %}
-    fossil-fuel-supply:
-        locations:
-            {% for id, location in locations.iterrows() %}
-            {{ id }}.techs:
-                diesel_supply:
-                kerosene_supply:
-                methanol_supply:
-                methane_supply:
             {% endfor %}
 
 """
@@ -120,7 +101,7 @@ def construct_locations(path_to_shapes, path_to_land_eligibility_km2, path_to_hy
         right_index=True,
         validate="one_to_one"
     )
-    locations = locations.assign(id=locations.index.str.replace(".", "-")).set_index("id")
+    locations = locations.assign(id=locations.index.str.replace(".", "-")).set_index("id").fillna(0)
 
     env = jinja2.Environment()
     env.filters["unit"] = filters.unit
