@@ -47,6 +47,7 @@ TEMPLATE = """locations:
                     energy_cap_max: {{ location.installed_capacity_nuclear_max_MW * scaling_factors.power }} # {{ (1 / scaling_factors.power) | unit("MW") }}
             {% endif %}
             ccgt:
+            hydrogen_storage:
 
     {% endfor %}
 overrides:
